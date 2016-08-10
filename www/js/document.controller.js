@@ -1,8 +1,8 @@
 angular.module('app.controllers')
 
-.controller('DocumentController', ['$scope', '$ionicModal', 'InvoiceService', DocumentController]);
+.controller('DocumentController', ['$scope', '$ionicModal', 'InvoiceService', DocumentController, StorageService]);
 
-function DocumentController($scope, $ionicModal, InvoiceService, StorageService) {  
+function DocumentController($scope, $ionicModal, InvoiceService) {
     var vm = this;
 
     setDefaultsForPdfViewer($scope);
@@ -53,7 +53,16 @@ function setDefaultsForPdfViewer($scope) {
     };
 }
 
-function getDummyData() {  
+function getDummyData($scope, StorageService) {
+
+    $scope.invoicebillItemsFromStorage = StorageService.getAll();
+    if($scope.invoicebillItemsFromStorage.length>=1){
+        $scope.invoicebillItemsFromStorage = $scope.invoicebillItemsFromStorage[$scope.invoicebillItemsFromStorage.length-1];
+    }
+    else{
+        $scope.invoicebillItemsFromStorage = StorageService.getAll();
+    }
+      
     return {
         Date: new Date().toLocaleDateString("en-IE", { year: "numeric", month: "long", day: "numeric" }),
         AddressFrom: {

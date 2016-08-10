@@ -26,15 +26,7 @@ function base64ToUint8Array(base64) {
     return uint8Array;
 }
 
-function createDocumentDefinition(invoice/*, StorageService, $scope*/) {
-
-    /*$scope.invicebillItemsFromStorage = StorageService.getAll();
-    if($scope.invicebillItemsFromStorage.length>=1){
-        $scope.invicebillItemsFromStorage = $scope.invicebillItemsFromStorage[$scope.invicebillItemsFromStorage.length-1];
-    }
-    else{
-        $scope.invicebillItemsFromStorage = StorageService.getAll();
-    }*/
+function createDocumentDefinition(invoice) {    
 
     var items = invoice.Items.map(function(item) {
         return [item.Description, item.Quantity, item.Price];
@@ -44,6 +36,7 @@ function createDocumentDefinition(invoice/*, StorageService, $scope*/) {
         content: [
             { text: 'TEAM WORK', style: 'header', alignment: 'center'},
             { text: 'Flat No. 903, Guru Niwas Building, Near Wester Express Highway, Jijamata Marg, Pump House, Andheri(E), Mumbai  400093, Tel : 2683 4151 | Email : teamwork.kumar@gmail.com', style: 'subheader', alignment: 'center'},
+            {},
             { text: invoice.Date, alignment: 'right'},
 
             { text: 'From', style: 'subheader'},
