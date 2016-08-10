@@ -1,0 +1,53 @@
+<html>
+<head>
+</head>
+<body>
+<ion-view style="" class=" " id="page2" title="Create New Bill">
+    <ion-content class="has-header" padding="true" ng-controller="addMoreBillItems">        
+        <form class="list " id="createNewBill-form2">
+            <label name="date" id="createNewBill-input2" class="item item-input item-floating-label ">
+                <span class="input-label">Date</span>
+                <input placeholder="Date" type="date" ng-model="date">
+            </label>
+            <label name="ms" id="createNewBill-input3" class="item item-input item-floating-label ">
+                <span class="input-label">M/S</span>
+                <input placeholder="M/S" type="text" ng-model="ms">
+            </label>
+            <h4 class=" " style="color: rgb(57, 199, 66); font-weight: 400;" id="createNewBill-heading1">Add Particulars</h4>
+            <label name="quantity" id="createNewBill-input4" class="item item-input item-floating-label ">
+                <span class="input-label">Quantity</span>
+                <input placeholder="Quantity" type="number" ng-model="quantity">
+            </label>
+            <label name="particulars" id="createNewBill-input5" class="item item-input item-floating-label ">
+                <span class="input-label">Particulars</span>
+                <input placeholder="Particulars" type="text" ng-model="particulars">
+            </label>
+            <label name="amount" id="createNewBill-input6" class="item item-input item-floating-label ">
+                <span class="input-label">Amount</span>
+                <input placeholder="Amoount" type="number" ng-model="amount">
+            </label>
+            <button class=" button button-assertive  button-block icon-left ion-android-add-circle " style="border-radius:10px 10px 10px 10px;" id="createNewBill-button2" ng-click="addBillItems(quantity,particulars,amount)">Add More</button>
+            <ion-list show-delete="true" can-swipe="true">
+               <ion-item ng-repeat="i in things">
+               <span class="input-label" style="color: black; font-weight: 600;">Particular : {{i.billItems.particulars}}
+               <br>Quantity : {{i.billItems.quantity}}<br>Amount : {{i.billItems.amount}}</span>
+               <ion-delete-button class="ion-minus-circled" ng-click="deleteItem(i)"></ion-delete-button>               
+               </ion-item>
+            </ion-list>
+            <button class=" button button-positive button-block " id="submitBill-button4" style="border-radius:10px 10px 10px 10px;" ng-click="addStorage(date,ms)">Submit Bill</button>            
+        </form>
+    </ion-content>
+</ion-view>
+</body>
+<script id="pdf-viewer.html" type="text/ng-template">  
+    <ion-modal-view>
+    <ion-header-bar>
+        <h1 class="title">Invoice</h1> 
+        <button ng-click="vm.modal.hide()" class="button button-icon icon ion-android-close"></button>
+    </ion-header-bar>
+    <ion-content>
+        <ng-pdf ng-if="pdfUrl" template-url="templates/viewer.html" canvasid="pdf" scale="page-fit"></ng-pdf>  
+    </ion-content>
+    </ion-modal-view>
+</script> 
+</html>
