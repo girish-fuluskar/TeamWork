@@ -1,5 +1,5 @@
 <ion-view style="" class=" " id="page3" title="Review Bill">
-    <ion-content class="has-header" padding="true" ng-controller="reviewBillCtrl">
+    <ion-content class="has-header" padding="true" ng-controller="addMoreBillItems">
     	<span class="input-label" style="color: black; font-weight: 600;">Date:{{billItemsFromStorage.header.date}} 
            <br>M/S : {{billItemsFromStorage.header.ms}}</span>
     	<ion-list show-delete="true" can-swipe="true">
@@ -9,7 +9,7 @@
            </ion-item>
         </ion-list>
         <div ng-controller="DocumentController as vm">
-        	<button class=" button button-positive button-block " id="createInvoice-button4" style="border-radius:10px 10px 10px 10px;" ng-click="vm.createInvoice()">Create Invoice</button>
+        	<button class=" button button-positive button-block " id="createInvoice-button4" style="border-radius:10px 10px 10px 10px;" ng-click="getStorageValue()">Create Invoice</button>
         </div>
     </ion-content>
 </ion-view>

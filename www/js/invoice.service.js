@@ -1,21 +1,40 @@
-angular.module('app.services').factory('InvoiceService', ['$q', InvoiceService]);
+angular.module('app.services')
+
+.factory('StorageServiceLocal', function($localStorage){
+    /*$localStorage = $localStorage.default({
+        storeData: []
+    });*/
+
+    var _getStorageAllData = function(){
+        return $localStorage.things;
+    };
+
+    return {
+        getStorageData: _getStorageAllData
+    };
+})
+
+.factory('InvoiceService', ['$q', InvoiceService])
+
 
 function InvoiceService($q) {  
     function createPdf(invoice) {
         return $q(function(resolve, reject) {
             var dd = createDocumentDefinition(invoice);
-            var pdf = pdfMake.createPdf(dd);
-
-            pdf.getBase64(function (output) {
-                resolve(base64ToUint8Array(output));
+            var pdf = pdfMake.createPdf(dd).getBase64(function(encodedString) {
+                data = encodedString;
             });
+
+            /*pdf.getBase64(function (output) {
+                resolve(base64ToUint8Array(output));
+            });*/
         });
     }
 
     return {
         createPdf: createPdf
     };    
-}
+} 
 
 function base64ToUint8Array(base64) {  
     var raw = atob(base64);
@@ -26,30 +45,36 @@ function base64ToUint8Array(base64) {
     return uint8Array;
 }
 
-function createDocumentDefinition(invoice) {    
+function createDocumentDefinition(invoice) {
+    /*var data = $localStorage;
+    console.log(data);
 
-    var items = invoice.Items.map(function(item) {
+    var _getAll = function () {
+      return $localStorage.storageData;
+    };*/
+    /*var items = invoice.Items.map(function(item) {
         return [item.Description, item.Quantity, item.Price];
+    });*/
+
+    var itemsArray = [];
+    itemsArray.push(invoice);
+    var items = itemsArray.map(function(item){
+        return [item.Date];
     });
 
     var dd = {
         content: [
             { text: 'TEAM WORK', style: 'header', alignment: 'center'},
-            { text: 'Flat No. 903, Guru Niwas Building, Near Wester Express Highway, Jijamata Marg, Pump House, Andheri(E), Mumbai  400093, Tel : 2683 4151 | Email : teamwork.kumar@gmail.com', style: 'subheader', alignment: 'center'},
-            {},
+            { text: 'Flat No. 903, Guru Niwas Building, Near Wester Express Highway, Jijamata Marg, Pump House, Andheri(E), Mumbai  400093, Tel : 2683 4151 | Email : teamwork.kumar@gmail.com', alignment: 'center'},
+            { text: ' '},
+            { text: ' '},
             { text: invoice.Date, alignment: 'right'},
-
-            { text: 'From', style: 'subheader'},
-            invoice.AddressFrom.Name,
-            invoice.AddressFrom.Address,
-            invoice.AddressFrom.Country,        
-
             { text: 'To', style: 'subheader'},
-            invoice.AddressTo.Name,
-            invoice.AddressTo.Address,
-            invoice.AddressTo.Country,  
-
-            { text: 'Items', style: 'subheader'},
+            { text: 'M/S :' + "   " + invoice.Ms.Ms, style: 'subheader'},
+            { text: 'Pan Card No : ADWPR2292Q', alignment: 'right'},
+            { text: 'Service Tax No : ADWPR2292QST001', alignment: 'right'},
+            {text: ' '},
+            { text: 'Particulars', style: 'subheader'},
             {
                 style: 'itemsTable',
                 table: {

@@ -1,8 +1,12 @@
 angular.module('app.controllers')
 
-.controller('DocumentController', ['$scope', '$ionicModal', 'InvoiceService', DocumentController, StorageService]);
+/*.controller('getStorageAllData', function($scope, StorageServiceLocal){
+    $scope.storageDataGetAll = StorageServiceLocal.getStorageData();
+})*/
 
-function DocumentController($scope, $ionicModal, InvoiceService) {
+.controller('DocumentController', ['$scope', '$ionicModal', '$localStorage', 'InvoiceService', 'StorageServiceLocal', DocumentController]);
+
+function DocumentController($scope, $ionicModal, $localStorage, InvoiceService, StorageServiceLocal) {
     var vm = this;
 
     setDefaultsForPdfViewer($scope);
@@ -53,29 +57,18 @@ function setDefaultsForPdfViewer($scope) {
     };
 }
 
-function getDummyData($scope, StorageService) {
+function getDummyData($scope, $localStorage) {
 
-    $scope.invoicebillItemsFromStorage = StorageService.getAll();
-    if($scope.invoicebillItemsFromStorage.length>=1){
-        $scope.invoicebillItemsFromStorage = $scope.invoicebillItemsFromStorage[$scope.invoicebillItemsFromStorage.length-1];
-    }
-    else{
-        $scope.invoicebillItemsFromStorage = StorageService.getAll();
-    }
-      
-    return {
-        Date: new Date().toLocaleDateString("en-IE", { year: "numeric", month: "long", day: "numeric" }),
-        AddressFrom: {
-            Name: chance.name(),
-            Address: chance.address(),
-            Country: chance.country({ full: true })
+    //$scope.storageDataGetAll = JSON.parse(localStorage["ngStorage-things"]); //StorageServiceLocal.getStorageData();
+    console.log('Here : ' + JSON.parse(localStorage["ngStorage-things"]));
+    return {        
+        Date: JSON.parse(localStorage["ngStorage-things"])[0].header.date,//$scope.storageDataGetAll[0].header.date,
+        To: {            
         },
-        AddressTo: {
-            Name: chance.name(),
-            Address: chance.address(),
-            Country: chance.country({ full: true })
+        Ms: {
+            Ms: JSON.parse(localStorage["ngStorage-things"])[0].header.ms//$scope.storageDataGetAll[0].header.ms
         },
-        Items: [
+        Particulars: [
             { Description: 'iPhone 6S', Quantity: '1', Price: '€700' },
             { Description: 'Samsung Galaxy S6', Quantity: '2', Price: '€655' }
         ],

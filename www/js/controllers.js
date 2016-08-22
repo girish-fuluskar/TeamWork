@@ -26,8 +26,125 @@ function ($scope, $stateParams) {
 	}
 })
 
-.controller('addMoreBillItems', function($scope, $controller, $cordovaToast, $filter, StorageService, $ionicListDelegate, $state){
+.controller('addMoreBillItems', function($scope, $controller, $cordovaFile, $ionicModal, $cordovaToast, $filter, StorageService, $ionicListDelegate, $state){
 	var billItemsArray=[];
+
+	$scope.getStorageValue = function(){
+		$scope.billItemsFromStorage = StorageService.getAll();
+		//creating document defination for pdf
+		var documentDefination = { 
+			content: [
+	            { text: 'TEAM WORK', style: 'header', alignment: 'center'},
+    	        { text: 'Flat No. 903, Guru Niwas Building, Near Wester Express Highway, Jijamata Marg, Pump House, Andheri(E), Mumbai  400093, Tel : 2683 4151 | Email : teamwork.kumar@gmail.com', alignment: 'center'},
+    	        { text: ' '},
+            { text: ' '},
+            { text: $scope.billItemsFromStorage[0].header.date, alignment: 'right'},
+            { text: 'To,', style: 'subheader'},
+            { text: 'M/S :' + "   " + $scope.billItemsFromStorage[0].header.ms, style: 'subheader'},
+            { text: 'Pan Card No : ADWPR2292Q', alignment: 'right'},
+            { text: 'Service Tax No : ADWPR2292QST001', alignment: 'right'},
+            {text: ' '},
+            { text: 'Particulars', style: 'subheader'},
+            {
+					style: 'tableExample',
+					table: {
+							widths: ['*', 75, 75],
+							body: [
+									['Particulars', 'Quantity', 'Amount'],
+									[$scope.billItemsFromStorage[0].finalBillDetails[0].particulars, $scope.billItemsFromStorage[0].finalBillDetails[0].quantity.toString(), $scope.billItemsFromStorage[0].finalBillDetails[0].amount.toString()]
+							]
+					}
+			},
+			{
+                style: 'totalsTable',
+                table: {
+                    widths: ['*', 75, 75],
+                    body: [
+                        [
+                            '',
+                            'Subtotal',
+                            $scope.billItemsFromStorage[0].finalBillDetails[0].amount.toString(),
+                        ],
+                        [
+                            '',
+                            'Shipping',
+                            '0',
+                        ],
+                        [
+                            '',
+                            'Total',
+                            $scope.billItemsFromStorage[0].finalBillDetails[0].amount.toString(),
+                        ]
+                    ]
+                },
+                layout: 'noBorders'
+            },
+			],
+	        styles: {
+	            header: {
+	                fontSize: 20,
+	                bold: true,
+	                margin: [0, 0, 0, 10],
+	                alignment: 'right'
+	            },
+	            subheader: {
+	                fontSize: 16,
+	                bold: true,
+	                margin: [0, 20, 0, 5]
+	            },
+	            itemsTable: {
+	                margin: [0, 5, 0, 15]
+	            },
+	            itemsTableHeader: {
+	                bold: true,
+	                fontSize: 13,
+	                color: 'black'
+	            },
+	            totalsTable: {
+	                bold: true,
+	                margin: [0, 30, 0, 0]
+	            }
+	        }
+    	};
+
+    	pdfMake.createPdf(documentDefination).open();
+
+
+/*    	var vm = this;
+   	
+	    $ionicModal.fromTemplateUrl('pdf-viewer.html', {
+	        scope: $scope,
+	        animation: 'slide-in-up'
+	    }).then(function (modal) {
+	        vm.modal = modal;
+	    });
+
+		var pdf = pdfMake.createPdf(documentDefination);
+
+        var encodeRaw = btoa(documentDefination);
+        var raw = atob(encodeRaw);
+        var uint8Array = new Uint8Array(raw.length);
+	    for (var i = 0; i < raw.lengtpdfh; i++) {
+	    	uint8Array[i] = raw.charCodeAt(i);
+	    }
+
+	    pdf.getBase64(uint8Array);
+
+        var blob = new Blob([pdf], {type: 'application/pdf'});
+        $scope.pdfUrl = URL.createObjectURL(blob);
+        
+        vm.modal.show();*/
+
+	};
+
+	$scope.base64ToUint8Array = function(base64) {  
+	    var raw = atob(base64);
+	    var uint8Array = new Uint8Array(raw.length);
+	    for (var i = 0; i < raw.length; i++) {
+	    	uint8Array[i] = raw.charCodeAt(i);
+	    }
+	    return uint8Array;
+	}
 
 	$scope.addBillItems = function(quantity,particulars,amount){		
 		if(($scope.date != "" && $scope.date != null) && ($scope.ms !="" && $scope.ms != null) 
@@ -68,7 +185,7 @@ function ($scope, $stateParams) {
 	$scope.addStorage = function (date,ms) {
 		var listBillItems = [];
 		var header={
-			date : date.toISOString().slice(0,10),
+			date : date.toString().slice(0,15),
 			ms : ms
 		} 					
 		if(billItemsArray.length >0){
