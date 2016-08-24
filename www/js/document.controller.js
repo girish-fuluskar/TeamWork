@@ -6,7 +6,7 @@ angular.module('app.controllers')
 
 .controller('DocumentController', ['$scope', '$ionicModal', '$localStorage', 'InvoiceService', 'StorageServiceLocal', DocumentController]);
 
-function DocumentController($scope, $ionicModal, $localStorage, InvoiceService, StorageServiceLocal) {
+function DocumentController($scope, $ionicModal, $localStorage, $cordovaEmailComposer, InvoiceService, StorageServiceLocal) {
     var vm = this;
 
     setDefaultsForPdfViewer($scope);

@@ -1,4 +1,4 @@
-angular.module('app.controllers', [])
+angular.module('app.controllers', ['ngCordova'])
   
 .controller('dashboardCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
@@ -26,10 +26,20 @@ function ($scope, $stateParams) {
 	}
 })
 
-.controller('addMoreBillItems', function($scope, $controller, $cordovaFile, $ionicModal, $cordovaToast, $filter, StorageService, $ionicListDelegate, $state){
+.controller('addMoreBillItems', function($scope, $controller, $ionicModal, $ionicPlatform, $cordovaToast, $filter, StorageService, $ionicListDelegate, $cordovaFile, $cordovaEmailComposer, $state){
 	var billItemsArray=[];
+	var vm = this;
 
-	$scope.getStorageValue = function(){
+	// Initialize the modal view.
+	    $ionicModal.fromTemplateUrl('pdf-viewer.html', {
+	        scope: $scope,
+	        animation: 'slide-in-up'
+	    }).then(function (modal) {
+	        vm.modal = modal;
+	    });
+
+	$scope.getStorageValue = function(){	
+
 		$scope.billItemsFromStorage = StorageService.getAll();
 		//creating document defination for pdf
 		var documentDefination = { 
@@ -107,44 +117,109 @@ function ($scope, $stateParams) {
 	        }
     	};
 
-    	pdfMake.createPdf(documentDefination).open();
+    	//pdfMake.createPdf(documentDefination).open();
+
+    	pdfMake.createPdf(documentDefination).getBase64(function(base64){
+    		pdf = atob(base64);
+    		
+    		var arr = new Array(pdf.length);
+
+			for(var i = 0; i < pdf.length; i++) {
+			    arr[i] = pdf.charCodeAt(i);
+			}
+			var byteArray = new Uint8Array(arr);
+			
+			var blob = new Blob([byteArray], {type: 'application/pdf'});
+			$scope.pdfUrl = URL.createObjectURL(blob);
+			
+			//window.open($scope.pdfUrl,'application/pdf');
+
+			//window.open('https://docs.google.com/viewer?url=' + encodeURIComponent($scope.pdfUrl), '_blank', 'location=no');
+			//window.open($scope.pdfUrl, '_system', 'location=yes');
+
+			vm.modal.show();
+    	});
+
+    	pdfMake.createPdf(documentDefination).getBuffer(function (buffer) {
+			var utf8 = new Uint8Array(buffer); // Convert to UTF-8...
+			binaryArray = utf8.buffer; // Convert to Binary...
+			console.log(cordova.file.dataDirectory);
+			$cordovaFile.writeFile(cordova.file.dataDirectory, "example.pdf", binaryArray, true)
+			.then(function (success) {
+			console.log("pdf created");
+				if(window.plugins && window.plugins.emailComposer) {
+		            window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
+		                console.log("Response -> " + result);
+		            }, 
+		            "Feedback for your App", // Subject
+		            "",                      // Body
+		            ["girish.fuluskar@gmail.com"],    // To
+		            null,                    // CC
+		            null,                    // BCC
+		            false,                   // isHTML
+		            [cordova.file.dataDirectory + "example.pdf"],                    // Attachments
+		           	null);                   // Attachment Data
+		        }
+			}, function (error) {
+			console.log("error");
+			});
+		});
 
 
-/*    	var vm = this;
-   	
-	    $ionicModal.fromTemplateUrl('pdf-viewer.html', {
-	        scope: $scope,
-	        animation: 'slide-in-up'
-	    }).then(function (modal) {
-	        vm.modal = modal;
-	    });
+/*    	if(window.plugins && window.plugins.emailComposer) {
+            window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
+                console.log("Response -> " + result);
+            }, 
+            "Feedback for your App", // Subject
+            "",                      // Body
+            ["girish.fuluskar@gmail.com"],    // To
+            null,                    // CC
+            null,                    // BCC
+            false,                   // isHTML
+            [cordova.file.dataDirectory + "example.pdf"],                    // Attachments
+           	null);                   // Attachment Data
+        }*/
 
-		var pdf = pdfMake.createPdf(documentDefination);
+    	
 
-        var encodeRaw = btoa(documentDefination);
-        var raw = atob(encodeRaw);
-        var uint8Array = new Uint8Array(raw.length);
-	    for (var i = 0; i < raw.lengtpdfh; i++) {
-	    	uint8Array[i] = raw.charCodeAt(i);
-	    }
 
-	    pdf.getBase64(uint8Array);
+    	
 
-        var blob = new Blob([pdf], {type: 'application/pdf'});
-        $scope.pdfUrl = URL.createObjectURL(blob);
-        
-        vm.modal.show();*/
-
-	};
-
-	$scope.base64ToUint8Array = function(base64) {  
-	    var raw = atob(base64);
-	    var uint8Array = new Uint8Array(raw.length);
-	    for (var i = 0; i < raw.length; i++) {
-	    	uint8Array[i] = raw.charCodeAt(i);
-	    }
-	    return uint8Array;
+    	/*var email = {
+			to: 'girish.fuluskar@gmail.com',
+			subject: 'Test Message',
+			body: 'This is a test message',
+			isHtml: true
+		};
+		$cordovaEmailComposer.isAvailable().then(function() {
+			$cordovaEmailComposer.open(email).then(null, function () {
+			// user cancelled email
+			});
+		}, function () {
+		// not available
+		});*/
 	}
+
+	// Clean up the modal view.
+    $scope.$on('$destroy', function () {
+        vm.modal.remove();
+    });
+
+    $scope.email = function($cordovaEmailComposer, emailid){
+    	var email = {
+			to: emailid,
+			subject: 'Test Message',
+			body: 'This is a test message',
+			isHtml: true
+		};
+		$cordovaEmailComposer.isAvailable().then(function() {
+			$cordovaEmailComposer.open(email).then(null, function () {
+			// user cancelled email
+			});
+		}, function () {
+		// not available
+		});
+    };
 
 	$scope.addBillItems = function(quantity,particulars,amount){		
 		if(($scope.date != "" && $scope.date != null) && ($scope.ms !="" && $scope.ms != null) 
