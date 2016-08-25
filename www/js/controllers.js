@@ -115,111 +115,51 @@ function ($scope, $stateParams) {
 	                margin: [0, 30, 0, 0]
 	            }
 	        }
-    	};
-
-    	//pdfMake.createPdf(documentDefination).open();
+    	};    	
 
     	pdfMake.createPdf(documentDefination).getBase64(function(base64){
     		pdf = atob(base64);
-    		
+    		p = base64;
     		var arr = new Array(pdf.length);
-
+    		var a = new Array(p);
 			for(var i = 0; i < pdf.length; i++) {
 			    arr[i] = pdf.charCodeAt(i);
 			}
 			var byteArray = new Uint8Array(arr);
-			
+			var byteArray64 = new Uint8Array(p);
+			binaryArray = byteArray.buffer; // Convert to Binary...	
+
 			var blob = new Blob([byteArray], {type: 'application/pdf'});
-			$scope.pdfUrl = URL.createObjectURL(blob);
+			$scope.pdfUrl = URL.createObjectURL(blob);			
 			
-			//window.open($scope.pdfUrl,'application/pdf');
-
-			//window.open('https://docs.google.com/viewer?url=' + encodeURIComponent($scope.pdfUrl), '_blank', 'location=no');
-			//window.open($scope.pdfUrl, '_system', 'location=yes');
-
-			vm.modal.show();
-    	});
-
-    	pdfMake.createPdf(documentDefination).getBuffer(function (buffer) {
-			var utf8 = new Uint8Array(buffer); // Convert to UTF-8...
-			binaryArray = utf8.buffer; // Convert to Binary...
-			console.log(cordova.file.dataDirectory);
-			$cordovaFile.writeFile(cordova.file.dataDirectory, "example.pdf", binaryArray, true)
-			.then(function (success) {
-			console.log("pdf created");
-				if(window.plugins && window.plugins.emailComposer) {
+			pdfMake.createPdf(documentDefination).download("file.pdf");
+			/*document.addEventListener('deviceready', function () {
+	    		if(window.plugins && window.plugins.emailComposer) {
 		            window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
 		                console.log("Response -> " + result);
 		            }, 
 		            "Feedback for your App", // Subject
-		            "",                      // Body
+		            "Invoice",                      // Body
 		            ["girish.fuluskar@gmail.com"],    // To
 		            null,                    // CC
 		            null,                    // BCC
 		            false,                   // isHTML
-		            [cordova.file.dataDirectory + "example.pdf"],                    // Attachments
+		            [],                    // Attachments
 		           	null);                   // Attachment Data
 		        }
-			}, function (error) {
-			console.log("error");
-			});
-		});
+	    	}, false);*/
 
-
-/*    	if(window.plugins && window.plugins.emailComposer) {
-            window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
-                console.log("Response -> " + result);
-            }, 
-            "Feedback for your App", // Subject
-            "",                      // Body
-            ["girish.fuluskar@gmail.com"],    // To
-            null,                    // CC
-            null,                    // BCC
-            false,                   // isHTML
-            [cordova.file.dataDirectory + "example.pdf"],                    // Attachments
-           	null);                   // Attachment Data
-        }*/
-
-    	
-
-
-    	
-
-    	/*var email = {
-			to: 'girish.fuluskar@gmail.com',
-			subject: 'Test Message',
-			body: 'This is a test message',
-			isHtml: true
-		};
-		$cordovaEmailComposer.isAvailable().then(function() {
-			$cordovaEmailComposer.open(email).then(null, function () {
-			// user cancelled email
-			});
-		}, function () {
-		// not available
-		});*/
+			vm.modal.show();
+			
+    	});    	
 	}
 
 	// Clean up the modal view.
-    $scope.$on('$destroy', function () {
+    /*$scope.$on('$destroy', function () {
         vm.modal.remove();
-    });
+    });*/
 
-    $scope.email = function($cordovaEmailComposer, emailid){
-    	var email = {
-			to: emailid,
-			subject: 'Test Message',
-			body: 'This is a test message',
-			isHtml: true
-		};
-		$cordovaEmailComposer.isAvailable().then(function() {
-			$cordovaEmailComposer.open(email).then(null, function () {
-			// user cancelled email
-			});
-		}, function () {
-		// not available
-		});
-    };
+    
 
 	$scope.addBillItems = function(quantity,particulars,amount){		
 		if(($scope.date != "" && $scope.date != null) && ($scope.ms !="" && $scope.ms != null) 
