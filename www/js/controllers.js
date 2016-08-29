@@ -1,4 +1,4 @@
-angular.module('app.controllers', ['ngCordova'])
+angular.module('app.controllers', [])
   
 .controller('dashboardCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
@@ -130,28 +130,27 @@ function ($scope, $stateParams) {
 			binaryArray = byteArray.buffer; // Convert to Binary...	
 
 			var blob = new Blob([byteArray], {type: 'application/pdf'});
-			$scope.pdfUrl = URL.createObjectURL(blob);			
-			
-			pdfMake.createPdf(documentDefination).download("file.pdf");
-			/*document.addEventListener('deviceready', function () {
-	    		if(window.plugins && window.plugins.emailComposer) {
-		            window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
-		                console.log("Response -> " + result);
-		            }, 
-		            "Feedback for your App", // Subject
-		            "Invoice",                      // Body
-		            ["girish.fuluskar@gmail.com"],    // To
-		            null,                    // CC
-		            null,                    // BCC
-		            false,                   // isHTML
-		            [],                    // Attachments
-		           	null);                   // Attachment Data
-		        }
-	    	}, false);*/
+			$scope.pdfUrl = URL.createObjectURL(blob);
+		    		    
+		    //writing file on device		    
+    		var folderpath = cordova.file.externalRootDirectory;
+    		var filename = "File.pdf";
 
-			vm.modal.show();
-			
-    	});    	
+    		window.resolveLocalFileSystemURL(folderpath, function(dir) {
+		        console.log("Access to the directory granted succesfully");
+				dir.getFile(filename, {create:true}, function(file) {
+		            console.log("File created succesfully.");
+		            file.createWriter(function(fileWriter) {
+		                console.log("Writing content to file");
+		                fileWriter.write(blob);
+		            }, function(){
+		                alert('Unable to save file in path '+ folderpath);
+		            });
+				});
+		    });
+
+			vm.modal.show();			
+    	});
 	}
 
 	// Clean up the modal view.
