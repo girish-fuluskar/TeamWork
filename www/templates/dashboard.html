@@ -1,12 +1,16 @@
 <ion-view style="" class=" " id="page1" title="Dashboard">
-    <ion-content class="has-header" padding="true">
-        <form class="list " id="dashboard-form1">
-            <ion-list class=" " id="dashboard-list1">
-                <ion-item style="" class="  " id="dashboard-list-item1">Item 1</ion-item>
-                <ion-item style="" class="  " id="dashboard-list-item2">Item 2</ion-item>
-                <ion-item style="" class="  " id="dashboard-list-item3">Item 3</ion-item>
-            </ion-list>
-        </form>
+    <ion-content class="has-header" padding="true" ng-controller="getBillCtrl">
+        <ion-list class=" " id="dashboard-list1">
+            <ion-item style="" class=" " id="dashboard-list-item1" ng-repeat="k in getBillDetails">
+                <span class="input-label" style="color: black; font-weight: 600;">
+                M/S :   {{k.header.ms}}
+                <br>
+                Date :  {{k.header.date}}
+                <br>
+                Amount  :   {{k.totalAmount.total}}
+                </span>
+            </ion-item>
+        </ion-list>
         <a class=" button button-positive  button-block icon-left ion-document " style="border-radius:10px 10px 10px 10px;" id="dashboard-button1" ui-sref="createNewBill">Create New Bill</a>
     </ion-content>
 </ion-view>

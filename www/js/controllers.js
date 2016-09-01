@@ -13,20 +13,25 @@ function ($scope, $stateParams) {
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
 function ($scope, $stateParams) {
 
-
 }])
 
+//Review bill before generating invoice (taking last value added in local storage)
 .controller('reviewBillCtrl', function($scope, $stateParams, StorageService){
-	$scope.billItemsFromStorage = StorageService.getAll();
-	if($scope.billItemsFromStorage.length>=1){
-		$scope.billItemsFromStorage = $scope.billItemsFromStorage[$scope.billItemsFromStorage.length-1];
+	$scope.billItemsFromStorageToReview = StorageService.getAll();
+	if($scope.billItemsFromStorageToReview.length>=1){
+		$scope.billItemsFromStorageToReview = $scope.billItemsFromStorageToReview[$scope.billItemsFromStorageToReview.length-1];
 	}
 	else{
-		$scope.billItemsFromStorage = StorageService.getAll();
+		$scope.billItemsFromStorageToReview = StorageService.getAll();
 	}
 })
 
-.controller('addMoreBillItems', function($scope, $controller, $ionicModal, $ionicPlatform, $cordovaToast, $filter, StorageService, $ionicListDelegate, $cordovaFile, $cordovaEmailComposer, $state){
+//Getting local storage values
+.controller('getBillCtrl', function($scope, $stateParams, StorageService){
+	$scope.getBillDetails = StorageService.getAll();
+})
+
+.controller('addMoreBillItems', function($scope, $ionicModal, $ionicPlatform, $cordovaToast, StorageService, $ionicListDelegate, $cordovaFile, $cordovaEmailComposer, $state){
 	var billItemsArray=[];
 	var vm = this;
 
@@ -38,57 +43,73 @@ function ($scope, $stateParams) {
 	        vm.modal = modal;
 	    });
 
+	//creating document defination from local storage value (taking only last value added in local storage)
 	$scope.getStorageValue = function(){	
-
+		//getting all records from local storage and filtering to last value added
 		$scope.billItemsFromStorage = StorageService.getAll();
+		if($scope.billItemsFromStorage.length>=1){
+			$scope.billItemsFromStorage = $scope.billItemsFromStorage[$scope.billItemsFromStorage.length-1];
+		}
+		else{
+			$scope.billItemsFromStorage = StorageService.getAll();
+		}
+
+		//Mapping local stoarage values according to document defination
+		var items = $scope.billItemsFromStorage.finalBillDetails.map(function(item) {
+	        return [item.particulars, JSON.stringify(item.quantity), JSON.stringify(item.amount)];
+	    });
+
 		//creating document defination for pdf
 		var documentDefination = { 
 			content: [
 	            { text: 'TEAM WORK', style: 'header', alignment: 'center'},
     	        { text: 'Flat No. 903, Guru Niwas Building, Near Wester Express Highway, Jijamata Marg, Pump House, Andheri(E), Mumbai  400093, Tel : 2683 4151 | Email : teamwork.kumar@gmail.com', alignment: 'center'},
     	        { text: ' '},
-            { text: ' '},
-            { text: $scope.billItemsFromStorage[0].header.date, alignment: 'right'},
-            { text: 'To,', style: 'subheader'},
-            { text: 'M/S :' + "   " + $scope.billItemsFromStorage[0].header.ms, style: 'subheader'},
-            { text: 'Pan Card No : ADWPR2292Q', alignment: 'right'},
-            { text: 'Service Tax No : ADWPR2292QST001', alignment: 'right'},
-            {text: ' '},
-            { text: 'Particulars', style: 'subheader'},
-            {
+            	{ text: ' '},
+            	{ text: $scope.billItemsFromStorage.header.date, alignment: 'right'},
+            	{ text: 'To,', style: 'subheader'},
+            	{ text: 'M/S :' + "   " + $scope.billItemsFromStorage.header.ms, style: 'subheader'},
+            	{ text: 'Pan Card No : ADWPR2292Q', alignment: 'right'},
+            	{ text: 'Service Tax No : ADWPR2292QST001', alignment: 'right'},
+            	{text: ' '},
+            	{ text: 'Particulars', style: 'subheader'},
+            	{
 					style: 'tableExample',
 					table: {
 							widths: ['*', 75, 75],
 							body: [
-									['Particulars', 'Quantity', 'Amount'],
-									[$scope.billItemsFromStorage[0].finalBillDetails[0].particulars, $scope.billItemsFromStorage[0].finalBillDetails[0].quantity.toString(), $scope.billItemsFromStorage[0].finalBillDetails[0].amount.toString()]
-							]
+								[
+									{ text: 'Particulars', style: 'itemsTableHeader' },
+		                            { text: 'Quantity', style: 'itemsTableHeader' },
+		                            { text: 'Price', style: 'itemsTableHeader' },
+	                            ]
+							].concat(items)
 					}
-			},
-			{
-                style: 'totalsTable',
-                table: {
-                    widths: ['*', 75, 75],
-                    body: [
-                        [
-                            '',
-                            'Subtotal',
-                            $scope.billItemsFromStorage[0].finalBillDetails[0].amount.toString(),
-                        ],
-                        [
-                            '',
-                            'Shipping',
-                            '0',
-                        ],
-                        [
-                            '',
-                            'Total',
-                            $scope.billItemsFromStorage[0].finalBillDetails[0].amount.toString(),
-                        ]
-                    ]
-                },
-                layout: 'noBorders'
-            },
+				},
+				{
+	                style: 'totalsTable',
+	                table: {
+	                    widths: ['*', 75, 75],
+	                    body: [
+	                        [
+	                            '',
+	                            'Subtotal',
+	                            $scope.billItemsFromStorage.totalAmount.total.toString(),
+	                        ],
+	                        [
+	                            '',
+	                            'Shipping',
+	                            '0',
+	                        ],
+	                        [
+	                            '',
+	                            'Total',
+	                            $scope.billItemsFromStorage.totalAmount.total.toString(),
+	                        ]
+	                    ]
+	                },
+	                layout: 'noBorders'
+	            },
 			],
 	        styles: {
 	            header: {
@@ -118,23 +139,19 @@ function ($scope, $stateParams) {
     	};    	
 
     	pdfMake.createPdf(documentDefination).getBase64(function(base64){
-    		pdf = atob(base64);
-    		p = base64;
+    		pdf = atob(base64);    		
     		var arr = new Array(pdf.length);
-    		var a = new Array(p);
-			for(var i = 0; i < pdf.length; i++) {
+    		for(var i = 0; i < pdf.length; i++) {
 			    arr[i] = pdf.charCodeAt(i);
 			}
-			var byteArray = new Uint8Array(arr);
-			var byteArray64 = new Uint8Array(p);
-			binaryArray = byteArray.buffer; // Convert to Binary...	
-
+			var byteArray = new Uint8Array(arr);			
+			binaryArray = byteArray.buffer;
 			var blob = new Blob([byteArray], {type: 'application/pdf'});
 			$scope.pdfUrl = URL.createObjectURL(blob);
 		    		    
 		    //writing file on device		    
     		var folderpath = cordova.file.externalRootDirectory;
-    		var filename = "File.pdf";
+    		var filename = $scope.billItemsFromStorage.header.ms+".pdf";
 
     		window.resolveLocalFileSystemURL(folderpath, function(dir) {
 		        console.log("Access to the directory granted succesfully");
@@ -148,17 +165,13 @@ function ($scope, $stateParams) {
 		            });
 				});
 		    });
-
-			vm.modal.show();			
-    	});
-	}
-
-	// Clean up the modal view.
-    /*$scope.$on('$destroy', function () {
-        vm.modal.remove();
-    });*/
-
-    
+    		$state.go('dashboard', {},{location:'replace'}).then(
+    			function(){
+    				//Opening created pdf file into default file opener (Acrobat for PDF)
+					window.plugins.fileOpener.open(folderpath+$scope.billItemsFromStorage.header.ms+".pdf");
+    		});
+    	});    	
+	}   
 
 	$scope.addBillItems = function(quantity,particulars,amount){		
 		if(($scope.date != "" && $scope.date != null) && ($scope.ms !="" && $scope.ms != null) 
@@ -169,6 +182,8 @@ function ($scope, $stateParams) {
 				particulars : particulars,
 				amount : amount
 			};
+
+			$scope.addedItems = billItems;
 			//assigning to obk=ject
 			var finalBillItems = {billItems:billItems};
 			//pushing into array
@@ -197,13 +212,21 @@ function ($scope, $stateParams) {
 		}		
 	};
 	$scope.addStorage = function (date,ms) {
-		var listBillItems = [];
+		var listBillItems=[];
+		var totalOfItems=0;
 		var header={
 			date : date.toString().slice(0,15),
 			ms : ms
+		}
+		for(var t=0;t<billItemsArray.length;t++){
+			totalOfItems += billItemsArray[t].billItems.amount; 
+		}
+
+		var totalAmount={
+			total : totalOfItems
 		} 					
 		if(billItemsArray.length >0){
-			StorageService.add(header,billItemsArray);
+			StorageService.add(header,billItemsArray, totalAmount);
 
 			listBillItems.push(header,billItemsArray);
 			$scope.things = listBillItems;
@@ -238,5 +261,4 @@ function ($scope, $stateParams) {
 		billItemsArray.splice(billItemsArray.indexOf(i), 1);		
 		$ionicListDelegate.closeOptionButtons();
 	};
-}) 
- 
+})

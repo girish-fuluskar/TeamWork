@@ -42,7 +42,7 @@
 <script id="pdf-viewer.html" type="text/ng-template">  
     <ion-modal-view>
     <ion-header-bar>        
-        <button ng-click="vm.modal.hide()" class="button button-icon icon ion-android-close"></button>        
+        <button ng-click="removeModal()" class="button button-icon icon ion-android-close"></button>        
     </ion-header-bar>
     <ion-content>
         <ng-pdf ng-if="pdfUrl" template-url="templates/viewer.html" canvasid="pdf" scale="page-fit"></ng-pdf>

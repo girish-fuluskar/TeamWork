@@ -11,14 +11,9 @@ angular.module('app.services', [])
 	  return $localStorage.things;
 	};
 
-	var _add = function (header, billItems) {
+	var _add = function (header, billItems, totalAmount) {
 		var finalBillDetails = [];
-		//creating header structure
-		/*var headDetails =
-		{
-			date : date,
-			ms : ms
-		};*/
+		
 		//creating repeatative structure
 		for(var y=0;y<billItems.length;y++){
 			var itemDetails = 
@@ -33,7 +28,8 @@ angular.module('app.services', [])
 		var finalInvoice =
 		{
 			header,
-			finalBillDetails
+			finalBillDetails,
+			totalAmount
 		}
 		//pushing to local storage
 	  	$localStorage.things.push(finalInvoice);	  		  	

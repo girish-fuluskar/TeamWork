@@ -1,15 +1,22 @@
 <ion-view style="" class=" " id="page3" title="Review Bill">
-    <ion-content class="has-header" padding="true" ng-controller="addMoreBillItems">
-    	<span class="input-label" style="color: black; font-weight: 600;">Date:{{billItemsFromStorage.header.date}} 
-           <br>M/S : {{billItemsFromStorage.header.ms}}</span>
+    <ion-content class="has-header" padding="true" ng-controller="reviewBillCtrl">
+    	<span class="input-label" style="color: black; font-weight: 600;">Date:{{billItemsFromStorageToReview.header.date}} 
+      <br>M/S : {{billItemsFromStorageToReview.header.ms}}
+      </span>
     	<ion-list show-delete="true" can-swipe="true">
-           <ion-item ng-repeat="i in billItemsFromStorage.finalBillDetails">
-           <span class="input-label" style="color: black; font-weight: 600;">Particular : {{i.particulars}}
-               <br>Quantity : {{i.quantity}}<br>Amount : {{i.amount}}</span>           
-           </ion-item>
-        </ion-list>
-        <div ng-controller="DocumentController as vm">
-        	<button class=" button button-positive button-block " id="createInvoice-button4" style="border-radius:10px 10px 10px 10px;" ng-click="getStorageValue()">Create Invoice</button>
+          <ion-item ng-repeat="i in billItemsFromStorageToReview.finalBillDetails">
+            <span class="input-label" style="color: black; font-weight: 600;">
+            Particular : {{i.particulars}}
+               <br>Quantity : {{i.quantity}}<br>Amount : {{i.amount}} </span> 
+          </ion-item>
+          <ion-item>
+            <span class="input-label" style="color: black; font-weight: 600;">
+              Total : {{billItemsFromStorageToReview.totalAmount.total}}
+            </span>
+          </ion-item>
+      </ion-list>
+        <div ng-controller="addMoreBillItems as vm">
+        	<button class=" button button-positive button-block " id="createInvoice-button4" style="border-radius:10px 10px 10px 10px;" ng-click="getStorageValue()">Create Invoice</button>          
         </div>
     </ion-content>
 </ion-view>

@@ -13,7 +13,7 @@ angular.module('app.routes', [])
   .state('dashboard', {
     url: '/dashboard',
     templateUrl: 'templates/dashboard.html',
-    controller: 'dashboardCtrl'
+    controller: 'getBillCtrl'
   })
 
   .state('createNewBill', {
