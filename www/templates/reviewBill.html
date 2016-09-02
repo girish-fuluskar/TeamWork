@@ -7,11 +7,22 @@
           <ion-item ng-repeat="i in billItemsFromStorageToReview.finalBillDetails">
             <span class="input-label" style="color: black; font-weight: 600;">
             Particular : {{i.particulars}}
-               <br>Quantity : {{i.quantity}}<br>Amount : {{i.amount}} </span> 
-          </ion-item>
+               <br>Quantity : {{i.quantity}}<br>Amount : {{(i.amount).toFixed(2)}} </span> 
+          </ion-item>            
           <ion-item>
             <span class="input-label" style="color: black; font-weight: 600;">
-              Total : {{billItemsFromStorageToReview.totalAmount.total}}
+              Service Tax (14%) : {{(billItemsFromStorageToReview.totalAmount.total*0.14).toFixed(2)}}
+            </span>
+            <span class="input-label" style="color: black; font-weight: 600;">
+              Swacha Bharat Abhiyan Tax (0.5%) : {{(billItemsFromStorageToReview.totalAmount.total*0.005).toFixed(2)}}
+            </span>
+            <span class="input-label" style="color: black; font-weight: 600;">
+              Krish Kalyax (0.5%) : {{(billItemsFromStorageToReview.totalAmount.total*0.005).toFixed(2)}}
+            </span>
+            <span class="input-label" style="color: black; font-weight: 600;">
+              Total : {{(billItemsFromStorageToReview.totalAmount.total+( billItemsFromStorageToReview.totalAmount.total*0.14)+
+              (billItemsFromStorageToReview.totalAmount.total*0.005)+
+              (billItemsFromStorageToReview.totalAmount.total*0.005)).toFixed(2)}}
             </span>
           </ion-item>
       </ion-list>
