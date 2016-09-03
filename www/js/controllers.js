@@ -35,6 +35,24 @@ function ($scope, $stateParams) {
 	var billItemsArray=[];
 	var vm = this;
 
+	//Declaring wording for converting number to words
+	var th = ['','thousand','lacs', 'crore'];
+	var dg = ['Zero','One','Two','Three','Four', 'Five','Six','Seven','Eight','Nine']; 
+	var tn = ['Ten','Eleven','Twelve','Thirteen', 'Fourteen','Fifteen','Sixteen', 'Seventeen','Eighteen','Nineteen'];
+	var tw = ['Twenty','Thirty','Forty','Fifty', 'Sixty','Seventy','Eighty','Ninety'];
+	var ps = ['Zero','One','Two','Three','Four', 'Five','Six','Seven','Eight','Nine',
+			'Ten','Eleven','Twelve','Thirteen', 'Fourteen','Fifteen','Sixteen', 'Seventeen','Eighteen','Nineteen','Twenty',
+			'Twenty One', 'Twenty Two', 'Twenty Three', 'Twenty Four', 'Twenty Five', 'Twenty Six', 'Twenty Seven', 'Twenty Eight', 'Twenty Nine','Thirty',
+			'Thirty One', 'Thirty Two', 'Thirty Three', 'Thirty Four', 'Thirty Five', 'Thirty Six', 'Thirty Seven', 'Thirty Eight', 'Thirty Nine','Forty',
+			'Forty One', 'Forty Two', 'Forty Three', 'Forty Four', 'Forty Five', 'Forty Six', 'Forty Seven', 'Forty Eight', 'Forty Nine','Fifty',
+			'Fifty One', 'Fifty Two', 'Fifty Three', 'Fifty Four', 'Fifty Five', 'Fifty Six', 'Fifty Seven', 'Fifty Eight', 'Fifty Nine', 'Sixty',
+			'Sixty One', 'Sixty Two', 'Sixty Three', 'Sixty Four', 'Sixty Five', 'Sixty Six', 'Sixty Seven', 'Sixty Eight', 'Sixty Nine','Seventy',
+			'Seventy One', 'Seventy Two', 'Seventy Three', 'Seventy Four', 'Seventy Five', 'Seventy Six', 'Seventy Seven', 'Seventy Eight', 'Seventy Nine','Eighty',
+			'Eighty One', 'Eighty Two', 'Eighty Three', 'Eighty Four', 'Eighty Five', 'Eighty Six', 'Eighty Seven', 'Eighty Eight', 'Eighty Nine','Ninety',
+			'Ninety One', 'Ninety Two', 'Ninety Three', 'Ninety Four', 'Ninety Five', 'Ninety Six', 'Ninety Seven', 'Ninety Eight', 'Ninety Nine',
+			];
+
+
 	// Initialize the modal view.
 	    $ionicModal.fromTemplateUrl('pdf-viewer.html', {
 	        scope: $scope,
@@ -59,6 +77,64 @@ function ($scope, $stateParams) {
 	        return [item.particulars, JSON.stringify(item.quantity), JSON.stringify(item.amount)];
 	    });
 
+
+		var s = ($scope.billItemsFromStorage.totalAmount.total+
+	                            ($scope.billItemsFromStorage.totalAmount.total*0.14)+
+	                            ($scope.billItemsFromStorage.totalAmount.total*0.005)+
+	                            ($scope.billItemsFromStorage.totalAmount.total*0.005)).toFixed(2);
+
+		//converting number to words
+	    $scope.toWords = function(s)
+		{  
+		    s = s.toString(); 
+		    s = s.replace(/[\, ]/g,''); 
+		    if (s != parseFloat(s)) return 'not a number'; 
+		    var x = s.indexOf('.'); 
+		    if (x == -1) x = s.length; 
+		    if (x > 15) return 'too big'; 
+		    var n = s.split(''); 
+		    var str = ''; 
+		    var sk = 0; 
+		    for (var i=0; i < x; i++) 
+		    {
+		        if ((x-i)%3==2) 
+		        {
+		            if (n[i] == '1') 
+		            {
+		                str += tn[Number(n[i+1])] + ' '; 
+		                i++; 
+		                sk=1;
+		            }
+		            else if (n[i]!=0) 
+		            {
+		                str += tw[n[i]-2] + ' ';
+		                sk=1;
+		            }
+		        }
+		        else if (n[i]!=0) 
+		        {
+		            str += dg[n[i]] +' '; 
+		            if ((x-i)%3==0) str += 'Hundred ';
+		            sk=1;
+		        }
+		        if ((x-i)%3==1)
+		        {
+		            if (sk) str += th[(x-i-1)/3] + ' ';
+		            sk=0;
+		        }
+		    }
+		    if (x != s.length)
+		    {
+		        var y = s.substring(s.indexOf('.')+1); 
+		        str += 'and '; 
+		        //for (var i=x+1; i<y; i++) 
+		        str += ps[Number(y)] +'  Paise';
+		    }
+		    return str.replace(/\s+/g,' ');
+		}
+
+		//converting number to words
+		var wordAmount = $scope.toWords(s);
 
 		//creating document defination for pdf
 		var documentDefination = {
@@ -105,8 +181,8 @@ function ($scope, $stateParams) {
             	{ text: $scope.billItemsFromStorage.header.date, style: 'subheader', alignment: 'right'},
             	{ text: 'To,', style: 'subheader'},
             	{ text: 'M/S :' + "   " + $scope.billItemsFromStorage.header.ms, style: 'subheader'},
-            	{ text: 'Pan Card No : ADWPR2292Q', style: 'subheader', alignment: 'right'},
-            	{ text: 'Service Tax No : ADWPR2292QST001', style: 'subheader', alignment: 'right'},
+            	{ text: 'Pan Card No : ADWPR2292Q', style: 'personalDetails', alignment: 'right'},
+            	{ text: 'Service Tax No : ADWPR2292QST001', style: 'personalDetails', alignment: 'right'},
             	{ text: 'Particulars', style: 'subheader'},
             	{
 					style: 'tableExample',
@@ -134,7 +210,7 @@ function ($scope, $stateParams) {
 	                        [
 	                            '',
 	                            'Swacha Bharat Abhiyan Tax (0.5%)',
-	                            (($scope.billItemsFromStorage.totalAmount.total*0.005).toFixed(2)).toString(),
+	                             (($scope.billItemsFromStorage.totalAmount.total*0.005).toFixed(2)).toString(),
 	                        ],
 	                        [
 	                            '',
@@ -142,8 +218,7 @@ function ($scope, $stateParams) {
 	                            (($scope.billItemsFromStorage.totalAmount.total*0.005).toFixed(2)).toString(),
 	                        ],
 	                    ]
-	                },
-	                layout: 'noBorders'
+	                }
 	            },
 	            {
 	            	style: 'finalTotalTable',
@@ -151,7 +226,7 @@ function ($scope, $stateParams) {
 	                    widths: ['*', 75, 75],
 	                    body: [	                        
 	                        [
-	                            '',
+	                            'In Words:  '+ wordAmount+'  only' ,
 	                            'Total',
 	                            ($scope.billItemsFromStorage.totalAmount.total+
 	                            ($scope.billItemsFromStorage.totalAmount.total*0.14)+
@@ -159,8 +234,7 @@ function ($scope, $stateParams) {
 	                            ($scope.billItemsFromStorage.totalAmount.total*0.005)).toFixed(2).toString(),
 	                        ]
 	                    ]
-	                },
-	                layout: 'noBorders'
+	                }
 	            }
 			],
 	        styles: {
@@ -171,8 +245,8 @@ function ($scope, $stateParams) {
 	                alignment: 'right'
 	            },
 	            subheader: {
-	                fontSize: 16,
-	                bold: false,
+	                fontSize: 15,
+	                bold: true,
 	                margin: [0, 0, 0, 5]
 	            },
 	            itemsTable: {
@@ -191,6 +265,11 @@ function ($scope, $stateParams) {
 	            	bold: true,
 	            	fontSize:15,
 	                margin: [0, 20, 0, 0]	
+	            },
+	            personalDetails:{
+	            	bold: true,
+	            	fontSize:10,
+	            	margin: [0, 0, 0, 5]
 	            }
 	        }
     	};    	
