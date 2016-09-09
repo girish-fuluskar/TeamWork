@@ -1,8 +1,12 @@
 <ion-view style="" class=" " id="page3" title="Review Bill">
     <ion-content class="has-header" padding="true" ng-controller="reviewBillCtrl">
-    	<span class="input-label" style="color: black; font-weight: 600;">Date:{{billItemsFromStorageToReview.header.date}} 
-      <br>M/S : {{billItemsFromStorageToReview.header.ms}}
-      </span>
+      <label class="item" name="" id="input10">
+      	<span class="input-label" style="color: black; font-weight: 600;">Date: {{billItemsFromStorageToReview.header.date}}</span>
+      </label>
+      <label class="item" name="" id="input11">
+        <span class="input-label" style="color: black; font-weight: 600;">M/S : {{billItemsFromStorageToReview.header.ms}}
+        </span>
+      </label>
     	<ion-list show-delete="true" can-swipe="true">
           <ion-item ng-repeat="i in billItemsFromStorageToReview.finalBillDetails">
             <span class="input-label" style="color: black; font-weight: 600;">

@@ -281,7 +281,6 @@ function ($scope, $stateParams) {
 			    arr[i] = pdf.charCodeAt(i);
 			}
 			var byteArray = new Uint8Array(arr);			
-			binaryArray = byteArray.buffer;
 			var blob = new Blob([byteArray], {type: 'application/pdf'});
 			$scope.pdfUrl = URL.createObjectURL(blob);
 		    		    
