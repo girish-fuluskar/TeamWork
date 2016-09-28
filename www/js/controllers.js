@@ -54,7 +54,7 @@ function ($scope, $stateParams) {
 
 
 	// Initialize the modal view.
-	    $ionicModal.fromTemplateUrl('pdf-viewer.html', {
+	    $ionicModal.fromTemplateUrl('pdf-viewer', {
 	        scope: $scope,
 	        animation: 'slide-in-up'
 	    }).then(function (modal) {
