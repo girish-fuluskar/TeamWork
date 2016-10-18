@@ -284,8 +284,16 @@ function ($scope, $stateParams) {
 			var blob = new Blob([byteArray], {type: 'application/pdf'});
 			$scope.pdfUrl = URL.createObjectURL(blob);
 		    		    
-		    //writing file on device		    
-    		var folderpath = cordova.file.externalRootDirectory;
+		    //writing file on specific device		    
+		    var isIOS = ionic.Platform.isIOS();
+		    if(isIOS === true){
+		    	var folderpath = cordova.file.documentsDirectory;	
+		    }
+		    else{
+		    	var folderpath = cordova.file.externalRootDirectory;	
+		    }
+    		//var folderpath = cordova.file.externalRootDirectory;
+    		//var folderpath = cordova.file.documentsDirectory;
     		var filename = $scope.billItemsFromStorage.header.ms+".pdf";
 
     		window.resolveLocalFileSystemURL(folderpath, function(dir) {
