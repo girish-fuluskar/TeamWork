@@ -1,16 +1,19 @@
 <ion-view style="" class=" " hide-back-button="true" hide-nav-bar="true" id="page1" title="Dashboard">
-    <ion-content class="has-header" padding="true" ng-controller="getBillCtrl">
-        <ion-list class=" " id="dashboard-list1">
-            <ion-item style="" class=" " id="dashboard-list-item1" ng-repeat="k in getBillDetails">
-                <span class="input-label" style="color: black; font-weight: 600;">
-                M/S :   {{k.header.ms}}
-                <br>
-                Date :  {{k.header.date}}
-                <br>
-                Amount  :   {{k.totalAmount.total}}
-                </span>
-            </ion-item>
-        </ion-list>
+    <ion-content class="" padding="true" ng-controller="getBillCtrl">
+        <span><i style="font-size:26px; font-weight:600;">Dashboard</i></span><hr>
+        <div style="max-height: 500px;overflow-y: auto; border: 1px solid lightgrey;">
+            <ion-list class=" " id="dashboard-list1">
+                <ion-item  class=" " id="dashboard-list-item1" ng-repeat="k in getBillDetails">
+                    <span class="input-label" style="margin: 5px; color: black; font-weight: 600;">
+                        M/S :   {{k.header.ms}}
+                        <br>
+                        Date :  {{k.header.date}}
+                        <br>
+                        Amount  :   {{k.totalAmount.total.toFixed(2)}}
+                    </span>
+                </ion-item>
+            </ion-list>
+        </div>
         <a class=" button button-positive  button-block icon-left ion-document " style="border-radius:10px 10px 10px 10px;" id="dashboard-button1" ui-sref="createNewBill">Create New Bill</a>
     </ion-content>
 </ion-view>

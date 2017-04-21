@@ -27,10 +27,10 @@ angular.module('app.services', [])
 		//creating final structure
 		var finalInvoice =
 		{
-			header,
-			finalBillDetails,
-			totalAmount
-		}
+			"header": header,
+			"finalBillDetails": finalBillDetails,
+			"totalAmount": totalAmount
+		};
 		//pushing to local storage
 	  	$localStorage.things.push(finalInvoice);	  		  	
 	}

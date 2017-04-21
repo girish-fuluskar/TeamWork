@@ -74,7 +74,7 @@ function ($scope, $stateParams) {
 
 		//Mapping local stoarage values according to document defination
 		var items = $scope.billItemsFromStorage.finalBillDetails.map(function(item) {
-	        return [item.particulars, JSON.stringify(item.quantity), JSON.stringify(item.amount)];
+	        return [item.particulars, JSON.stringify(item.quantity), item.amount.toFixed(2)];
 	    });
 
 
@@ -188,7 +188,7 @@ function ($scope, $stateParams) {
 					style: 'tableExample',
 					table: {
 							widths: ['*', 75, 75],
-							body: [
+							body: [								
 								[
 									{ text: 'Particulars', style: 'itemsTableHeader' },
 		                            { text: 'Quantity', style: 'itemsTableHeader' },
@@ -198,36 +198,48 @@ function ($scope, $stateParams) {
 					}
 				},
 				{
+					style: 'initialTotal',
+					table:{
+						widths:['*', 75],
+						body: [
+							[
+								'Total',
+								$scope.billItemsFromStorage.totalAmount.total.toFixed(2)
+							]
+						]
+					}
+				},
+				{
 	                style: 'totalsTable',
 	                table: {
-	                    widths: ['*', 75, 75],
+	                    widths: ['*', 75],
 	                    body: [
 	                        [
-	                            '',
+	                            
 	                            'Service Tax (14%)',
-	                            (($scope.billItemsFromStorage.totalAmount.total*0.14).toFixed(2)).toString(),
+	                            (($scope.billItemsFromStorage.totalAmount.total*0.14).toFixed(2)).toString()
 	                        ],
 	                        [
-	                            '',
+	                            
 	                            'Swacha Bharat Abhiyan Tax (0.5%)',
-	                             (($scope.billItemsFromStorage.totalAmount.total*0.005).toFixed(2)).toString(),
+	                             (($scope.billItemsFromStorage.totalAmount.total*0.005).toFixed(2)).toString()
 	                        ],
 	                        [
-	                            '',
+	                            
 	                            'Krish Kalyax (0.5%)',
-	                            (($scope.billItemsFromStorage.totalAmount.total*0.005).toFixed(2)).toString(),
-	                        ],
+	                            (($scope.billItemsFromStorage.totalAmount.total*0.005).toFixed(2)).toString()
+	                        ]
 	                    ]
 	                }
 	            },
 	            {
 	            	style: 'finalTotalTable',
 	            	table: {
-	                    widths: ['*', 75, 75],
+	                    widths: ['*', 75],
 	                    body: [	                        
 	                        [
-	                            'In Words:  '+ wordAmount+'  only' ,
-	                            'Total',
+	                            
+	                            'Final Total:\n'+'(In Words:  '+ wordAmount+'  only)',
 	                            ($scope.billItemsFromStorage.totalAmount.total+
 	                            ($scope.billItemsFromStorage.totalAmount.total*0.14)+
 	                            ($scope.billItemsFromStorage.totalAmount.total*0.005)+
@@ -257,14 +269,20 @@ function ($scope, $stateParams) {
 	                fontSize: 15,
 	                color: 'black'
 	            },
+	            initialTotal:{
+	            	bold: true,
+	            	fontSize: 15,
+	                color: 'black',
+	                margin: [0, 0, 0, 0]
+	            },
 	            totalsTable: {
-	                bold: true,
-	                margin: [0, 10, 0, 0]
+	                bold: false,
+	                margin: [0, 0, 0, 0]
 	            },
 	            finalTotalTable:{
 	            	bold: true,
 	            	fontSize:15,
-	                margin: [0, 20, 0, 0]	
+	                margin: [0, 0, 0, 0]	
 	            },
 	            personalDetails:{
 	            	bold: true,
