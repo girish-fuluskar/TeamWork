@@ -307,15 +307,16 @@ function ($scope, $stateParams) {
 		    		    
 		    //writing file on specific device		    
 		    var isIOS = ionic.Platform.isIOS();
-		    if(isIOS === true){
+		    /*if(isIOS === true){
 		    	var folderpath = cordova.file.documentsDirectory;	
 		    }
 		    else{
-		    	var folderpath = cordova.file.externalRootDirectory;	
-		    }
+		    	var folderpath = cordova.file.externalDataDirectory;	
+		    }*/
     		//var folderpath = cordova.file.externalRootDirectory;
-    		//var folderpath = cordova.file.documentsDirectory;
+    		var folderpath = cordova.file.externalRootDirectory + 'Download/'; 
     		var filename = $scope.billItemsFromStorage.header.ms+".pdf";
+    		alert('message: ' + folderpath + " " + filename);
 
     		window.resolveLocalFileSystemURL(folderpath, function(dir) {
 		        console.log("Access to the directory granted succesfully");
@@ -332,7 +333,23 @@ function ($scope, $stateParams) {
     		$state.go('dashboard', {},{location:'replace'}).then(
     			function(){
     				//Opening created pdf file into default file opener (Acrobat for PDF)
-					window.plugins.fileOpener.open(folderpath+$scope.billItemsFromStorage.header.ms+".pdf");
+					// window.plugins.fileOpener.open(folderpath+$scope.billItemsFromStorage.header.ms+".pdf");
+
+					// onSuccess Callback
+					// This method accepts a JSON object, which contains the
+					// message response
+					//
+					var onSuccess = function(data) {
+					    alert('message: ' + data.message);
+					};
+
+					// onError Callback receives a json object
+					//
+					function onError(error) {
+					    alert('message: ' + error.message);
+					}
+
+					window.cordova.plugins.FileOpener.openFile(folderpath+$scope.billItemsFromStorage.header.ms+".pdf", onSuccess, onError);
     		});
     	});    	
 	}   
